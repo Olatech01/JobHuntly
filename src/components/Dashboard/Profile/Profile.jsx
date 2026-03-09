@@ -25,6 +25,31 @@ const Profile = () => {
             description: "Developed digital marketing strategies, activation plans, proposals, contests and promotions for client initiatives"
         },
     ]
+
+    const education = [
+        {
+            schoolLogo: "/harvard.svg",
+            schoolName: "Harvard University",
+            degree: "Postgraduate degree, Applied Psychology",
+            description: "As an Applied Psychologist in the field of Consumer and Society, I am specialized in creating business opportunities by observing, analysing, researching and changing behaviour.",
+            time: "2010 - 2012"
+        },
+        {
+            schoolLogo: "/toronto.svg",
+            schoolName: "University of Toronto",
+            degree: "Bachelor of Arts, Visual Communication",
+            description: "As an Applied Psychologist in the field of Consumer and Society, I am specialized in creating business opportunities by observing, analysing, researching and changing behaviour.",
+            time: "2005 - 2009"
+        },
+    ]
+
+    const skills = [
+        "Communication",
+        "Analytics",
+        "Facebook Ads",
+        "Content Planning",
+        "Community Manager",
+    ]
     return (
         <div className='flex flex-row gap-10'>
             <div className='w-full flex flex-col gap-10'>
@@ -57,7 +82,7 @@ const Profile = () => {
                     <div className='flex flex-col gap-8'>
                         {experiences.map((item, index) => (
                             <div key={index} className='flex gap-5 items-start'>
-                                <Image height={80} width={80} src={item.logo} alt={item.companyName}/>
+                                <Image height={80} width={80} src={item.logo} alt={item.companyName} />
                                 <div className='space-y-2'>
                                     <div className='flex items-center justify-between'>
                                         <h2 className='text-[18px] font-semibold text-[#25324B]'>
@@ -77,6 +102,66 @@ const Profile = () => {
                                         {item.description}
                                     </span>
                                 </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div className='border border-[#D6DDEB] py-6 px-4 flex flex-col gap-6'>
+                    <div className='flex items-center justify-between'>
+                        <h2 className='text-[20px] font-semibold text-[#25324B]'>
+                            Education
+                        </h2>
+                        <span className='border border-[#D6DDEB] p-3'>
+                            <Plus color='#4640DE' />
+                        </span>
+                    </div>
+                    <div className='flex flex-col gap-8'>
+                        {education.map((item, index) => (
+                            <div key={index} className='flex gap-5'>
+                                <Image height={80} width={80} src={item.schoolLogo} alt={item.companyName} />
+                                <div className='space-y-2'>
+                                    <div className='flex items-center justify-between'>
+                                        <h2 className='text-[18px] font-semibold text-[#25324B]'>
+                                            {item.companyName}
+                                        </h2>
+                                        <span className='border border-[#D6DDEB] p-3'>
+                                            <FaRegEdit color='#4640DE' />
+                                        </span>
+                                    </div>
+                                    <div className='text-[14px] font-normal text-[#7C8493]'>
+                                        <span className='text-[14px] font-semibold text-[#25324B]'>{item.degree}</span>
+                                    </div>
+                                    <p className='text-[14px] font-normal text-[#7C8493]'>
+                                        {item.time}
+                                    </p>
+                                    <span className='text-[#515B6F] text-[16px] font-normal'>
+                                        {item.description}
+                                    </span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div className='border border-[#D6DDEB] py-6 px-4 flex flex-col gap-6'>
+                    <div className='flex items-center justify-between'>
+                        <h2 className='text-[20px] font-semibold text-[#25324B]'>
+                            Skills
+                        </h2>
+                        <div className='flex gap-2'>
+                            <span className='border border-[#D6DDEB] p-3'>
+                                <Plus color='#4640DE' />
+                            </span>
+                            <span className='border border-[#D6DDEB] p-3'>
+                                <FaRegEdit color='#4640DE'/>
+                            </span>
+                        </div>
+                    </div>
+                    <div className='grid grid-cols-4 gap-4'>
+                        {skills.map((item, index) => (
+                            <div key={index}>
+                                <span className='text-[#4640DE] text-[16px] font-medium py-[4px] px-[12px] bg-[#F8F8FD]'>
+                                    {item}
+                                </span>
                             </div>
                         ))}
                     </div>
