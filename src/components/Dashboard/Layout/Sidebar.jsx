@@ -1,12 +1,19 @@
 "use client"
+import LogoutModal from '@/components/Modal/LogoutModal';
 import { Building2, CircleQuestionMark, File, Home, LogOut, MessageSquareText, Search, Settings, User } from 'lucide-react'
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import React from 'react'
+import React, { useState } from 'react'
 
 const Sidebar = () => {
     const pathname = usePathname();
+    const [logoutOpen, setLogoutOpen] = useState(false);
+
+    const handleLogout = () => {
+        // clear token / cookies
+        console.log("User logged out");
+    };
 
     const menuItems = [
         { name: "Dashboard", icon: <Home />, path: "/dashboard" },
@@ -68,6 +75,13 @@ const Sidebar = () => {
                     <span className="font-medium">Log Out</span>
                 </button>
             </div>
+
+
+            <LogoutModal
+                open={logoutOpen}
+                setOpen={setLogoutOpen}
+                handleLogout={handleLogout}
+            />
         </div>
     )
 }
