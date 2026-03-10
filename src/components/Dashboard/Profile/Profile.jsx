@@ -53,6 +53,14 @@ const Profile = () => {
     return (
         <div className='flex flex-row gap-10'>
             <div className='w-full flex flex-col gap-10'>
+                <div className='flex flex-col gap-2'>
+                    <Image height={100} width={100} src={"/header.svg"} alt='image' className='w-full' />
+                    <div className=''>
+                        <div className='bg-white rounded-full w-fit p-2'>
+                            <Image height={140} width={140} src={"/Avatar.svg"} alt='image' />
+                        </div>
+                    </div>
+                </div>
                 <div className='border border-[#D6DDEB] py-6 px-4 flex flex-col gap-6'>
                     <div className='flex items-center justify-between'>
                         <h2 className='text-[20px] font-semibold text-[#25324B]'>
@@ -118,7 +126,7 @@ const Profile = () => {
                     <div className='flex flex-col gap-8'>
                         {education.map((item, index) => (
                             <div key={index} className='flex gap-5'>
-                                <Image height={80} width={80} src={item.schoolLogo} alt={item.companyName} />
+                                <Image height={80} width={80} src={item.schoolLogo} alt="user" />
                                 <div className='space-y-2'>
                                     <div className='flex items-center justify-between'>
                                         <h2 className='text-[18px] font-semibold text-[#25324B]'>
@@ -152,7 +160,7 @@ const Profile = () => {
                                 <Plus color='#4640DE' />
                             </span>
                             <span className='border border-[#D6DDEB] p-3'>
-                                <FaRegEdit color='#4640DE'/>
+                                <FaRegEdit color='#4640DE' />
                             </span>
                         </div>
                     </div>
