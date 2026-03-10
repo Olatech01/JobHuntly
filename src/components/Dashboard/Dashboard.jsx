@@ -1,12 +1,15 @@
+"use client"
 import { Calendar1 } from 'lucide-react'
-import React from 'react'
+import React, { useContext } from 'react'
+import { UserContext } from '../Context/UserContext';
 
 const Dashboard = () => {
+  const { user, token, isLoading, logOut } = useContext(UserContext);
   return (
     <div className=''>
       <div className='flex items-center justify-between'>
         <div>
-          <h1 className='text-[#25324B] text-[24px] font-semibold'>Good Morning, Jake</h1>
+          <h1 className='text-[#25324B] text-[24px] font-semibold'>Good Morning, {user?.fullName}</h1>
           <p className='text-[16px] font-medium text-[#7C8493]'>
             Here is what’s happening with your job search applications from July 19 - July 25.
           </p>

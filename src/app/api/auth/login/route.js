@@ -3,9 +3,7 @@ import { NextResponse } from "next/server";
 
 
 export async function POST(request) {
-    const body = await request.json();
-    const { email, password } = body;
-
+    const payload = await request.json();
 
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`, {
@@ -13,11 +11,12 @@ export async function POST(request) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ email, password }),
+            body: JSON.stringify(payload),
         });
         const data = await res.json();
+        // console.log('Login response:', data);
         if (res.ok) {
-            return NextResponse.json({ message: 'Login successful', token: data.token });
+            return NextResponse.json(data);
         } else {
             return NextResponse.json({ message: 'Login failed' }, { status: 401 });
         }
