@@ -23,7 +23,6 @@ const Login = () => {
     const payload = {
         email: formData.email,
         password: formData.password,
-        role: activeTab // Include the role in the payload
     }
 
     const handleSubmit = async (e) => {
