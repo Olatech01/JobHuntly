@@ -5,6 +5,8 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'jobhuntly-backend.onrender.com',
+        port: '',
+        pathname: '/uploads/**',
       },
     ],
   },

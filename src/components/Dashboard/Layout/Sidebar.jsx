@@ -36,19 +36,19 @@ const Sidebar = () => {
             <nav className="flex-1">
                 <ul className="space-y-2">
                     {menuItems.map((item) => {
-                        const isActive = pathname === item.path;
+                        const isActive = pathname.startsWith === item.path;
 
                         return (
                             <li key={item.name}>
                                 <Link
                                     href={item.path}
                                     className={`
-                    flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200
-                    ${isActive
+                                    flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200
+                                    ${isActive
                                             ? "bg-[#5858FA] text-white shadow-lg"
                                             : "text-gray-700 hover:bg-gray-100 hover:text-[#5858FA]"
                                         }
-                  `}
+                                    `}
                                 >
                                     <span className={isActive ? "text-white" : "text-gray-600"}>
                                         {item.icon}

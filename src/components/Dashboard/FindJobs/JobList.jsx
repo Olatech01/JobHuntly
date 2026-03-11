@@ -1,71 +1,19 @@
 "use client"
+import { UserContext } from "@/components/Context/UserContext";
+import LoadingState from "@/components/Loader/LoadingState";
 import { Grid2x2, List } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
-
-const jobs = [
-    {
-        company: "Nomad",
-        logo: "/nomad.svg",
-        title: "Social Media Assistant",
-        location: "Paris, France",
-        tags: ["Full-Time", "Marketing", "Design"],
-        applied: 5,
-        capacity: 10
-    },
-    {
-        company: "Dropbox",
-        logo: "/divvy.svg",
-        title: "Brand Designer",
-        location: "San Francisco, USA",
-        tags: ["Full-Time", "Marketing", "Design"],
-        applied: 2,
-        capacity: 10
-    },
-    {
-        company: "Terraform",
-        logo: "/packer.svg",
-        title: "Interactive Developer",
-        location: "Hamburg, Germany",
-        tags: ["Full-Time", "Marketing", "Design"],
-        applied: 8,
-        capacity: 12
-    },
-    {
-        company: "Nomad",
-        logo: "/nomad.svg",
-        title: "Social Media Assistant",
-        location: "Paris, France",
-        tags: ["Full-Time", "Marketing", "Design"],
-        applied: 5,
-        capacity: 10
-    },
-    {
-        company: "Dropbox",
-        logo: "/divvy.svg",
-        title: "Brand Designer",
-        location: "San Francisco, USA",
-        tags: ["Full-Time", "Marketing", "Design"],
-        applied: 2,
-        capacity: 10
-    },
-    {
-        company: "Terraform",
-        logo: "/packer.svg",
-        title: "Interactive Developer",
-        location: "Hamburg, Germany",
-        tags: ["Full-Time", "Marketing", "Design"],
-        applied: 8,
-        capacity: 12
-    }
-];
-
-
+import Link from "next/link";
+import { useContext, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 export default function JobList() {
 
     const [page, setPage] = useState(1);
     const [change, setChange] = useState("grid")
+    const [jobs, setJobs] = useState([])
+    const { token } = useContext(UserContext);
+    const [isLoadingData, setIsLoadingData] = useState(false);
 
     const employment = [
         { name: "Full-time", count: 3 },
@@ -75,10 +23,57 @@ export default function JobList() {
         { name: "Contract", count: 3 },
     ];
 
+
+
+
+    useEffect(() => {
+        const fetchJobs = async () => {
+            if (!token) return;
+
+            setIsLoadingData(true);
+
+            try {
+                const response = await fetch("/api/getAllJobs", {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server responded with ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.jobs) {
+                    setJobs(data.jobs);
+                } else if (Array.isArray(data)) {
+                    setJobs(data);
+                } else if (data.data) {
+                    setJobs(data.data);
+                } else {
+                    console.warn("Unexpected API format:", data);
+                    setJobs([]);
+                }
+
+            } catch (err) {
+                console.error("Fetch jobs failed:", err);
+                toast.error(err.message || "Failed to load jobs");
+                setJobs([]);
+            } finally {
+                setIsLoadingData(false);
+            }
+        };
+
+        fetchJobs();
+    }, [token]);
+
     const perPage = 5;
 
     const start = (page - 1) * perPage;
-    const paginatedJobs = jobs.slice(start, start + perPage);
+    const paginatedJobs = jobs?.slice(start, start + perPage);
 
     const totalPages = Math.ceil(jobs.length / perPage);
 
@@ -157,12 +152,18 @@ export default function JobList() {
                 </div>
 
                 {/* Job Cards */}
-                {
+                {/* {isLoadingData &} */}
+                {isLoadingData ? (
+                    <LoadingState />
+                ) : jobs.length === 0 ? (
+                    <div className="text-center py-10 text-gray-500">No jobs found</div>
+                ) : (
+
                     change === "grid" ? (
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {paginatedJobs.map((job, i) => {
 
-                                const progress = (job.applied / job.capacity) * 100;
+                                const progress = (job?.applicationsCount / job?.capacity) * 100;
 
                                 return (
                                     <div
@@ -171,21 +172,23 @@ export default function JobList() {
                                     >
                                         {/* Logo + badge */}
                                         <div className="flex justify-between items-center">
-                                            <Image src={job.logo} width={40} height={40} alt="logo" />
+                                            <Image src={job.company?.companyLogoUrl} width={40} height={40} alt="logo" />
 
                                             <span className="bg-[#E7F6EC] text-[#56CDAD] text-xs px-3 py-1 rounded-full">
-                                                Full-Time
+                                                {job.employmentType}
                                             </span>
                                         </div>
 
                                         {/* Title */}
                                         <div>
-                                            <h3 className="text-lg font-semibold text-[#25324B]">
-                                                {job.title}
-                                            </h3>
+                                            <Link href={`/dashboard/jobs/details/${job._id}`} className="hover:underline">
+                                                <h3 className="text-[16px] font-semibold text-[#25324B]">
+                                                    {job.jobTitle}
+                                                </h3>
+                                            </Link>
 
                                             <p className="text-sm text-gray-500">
-                                                {job.company} • {job.location}
+                                                {job.company?.companyName} • {job.company?.location}
                                             </p>
                                         </div>
 
@@ -193,12 +196,9 @@ export default function JobList() {
                                         <div className="flex gap-2 flex-wrap">
 
                                             <span className="border text-[#FFB836] border-[#FFB836] text-xs px-3 py-1 rounded-full">
-                                                Marketing
+                                                {job.categories}
                                             </span>
 
-                                            <span className="border text-[#4640DE] border-[#4640DE] text-xs px-3 py-1 rounded-full">
-                                                Design
-                                            </span>
 
                                         </div>
 
@@ -212,7 +212,7 @@ export default function JobList() {
                                             </div>
 
                                             <p className="text-xs text-gray-500 mt-2">
-                                                {job.applied} applied of {job.capacity} capacity
+                                                {job?.applicationsCount} applied of {job?.capacity} capacity
                                             </p>
                                         </div>
 
@@ -231,7 +231,7 @@ export default function JobList() {
                                     <div className="flex gap-4">
 
                                         <Image
-                                            src={job.logo}
+                                            src={job.company?.companyLogoUrl}
                                             width={50}
                                             height={50}
                                             alt="logo"
@@ -239,28 +239,30 @@ export default function JobList() {
 
                                         <div>
 
-                                            <h3 className="font-semibold text-[#25324B]">
-                                                {job.title}
-                                            </h3>
+                                            <Link href={`/dashboard/jobs/details/${job._id}`} className="hover:underline">
+                                                <h3 className="text-[16px] font-semibold text-[#25324B]">
+                                                    {job.jobTitle}
+                                                </h3>
+                                            </Link>
 
                                             <p className="text-sm text-gray-500">
-                                                {job.company} • {job.location}
+                                                {job.company?.companyName} • {job.company?.location}
                                             </p>
 
                                             {/* Tags */}
                                             <div className="flex gap-2 mt-2">
 
                                                 <span className="bg-[#E7F6EC] text-[#56CDAD] text-xs px-2 py-1 rounded">
-                                                    Full-Time
+                                                    {job.employmentType}
                                                 </span>
 
                                                 <span className="border text-[#FFB836] border-[#FFB836] text-xs px-2 py-1 rounded">
-                                                    Marketing
+                                                    {job.categories}
                                                 </span>
 
-                                                <span className="border text-[#4640DE] border-[#4640DE] text-xs px-2 py-1 rounded">
+                                                {/* <span className="border text-[#4640DE] border-[#4640DE] text-xs px-2 py-1 rounded">
                                                     Design
-                                                </span>
+                                                </span> */}
 
                                             </div>
 
@@ -276,7 +278,7 @@ export default function JobList() {
                                         </button>
 
                                         <p className="text-xs text-gray-500">
-                                            {job.applied} applied of {job.capacity} capacity
+                                            {job.applicationsCount} applied of {job.capacity} capacity
                                         </p>
 
                                     </div>
@@ -287,7 +289,8 @@ export default function JobList() {
 
                         </div>
                     )
-                }
+
+                )}
 
                 {/* Pagination */}
 
