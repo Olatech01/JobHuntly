@@ -36,7 +36,7 @@ const Sidebar = () => {
             <nav className="flex-1">
                 <ul className="space-y-2">
                     {menuItems.map((item) => {
-                        const isActive = pathname.startsWith === item.path;
+                        const isActive = pathname === item.path;
 
                         return (
                             <li key={item.name}>
