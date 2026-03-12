@@ -6,7 +6,8 @@ import { useParams } from 'next/navigation';
 import React from 'react'
 import { UserContext } from '@/components/Context/UserContext';
 import Image from 'next/image';
-import { Share } from 'lucide-react';
+import { Share, Share2 } from 'lucide-react';
+import Application from '@/components/Modal/Application';
 
 // Loader Component
 const JobDetailsLoader = () => {
@@ -130,6 +131,9 @@ const JobDetails = () => {
     const [job, setJob] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [application, setApplicattion] = useState(false)
+
+    
 
     useEffect(() => {
         const fetchJobDetails = async () => {
@@ -188,7 +192,6 @@ const JobDetails = () => {
 
     const progress = (job?.job?.applicationsCount / job?.job?.capacity) * 100;
 
-
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
         return new Date(dateString).toLocaleDateString(undefined, options);
@@ -214,8 +217,8 @@ const JobDetails = () => {
                     </div>
                 </div>
                 <div className='flex items-center gap-2'>
-                    <Share />
-                    <button className='bg-[#4640DE] text-white font-semibold cursor-pointer w-[125px] h-[50px]'>
+                    <Share2 />
+                    <button onClick={() => setApplicattion(true)} className='bg-[#4640DE] text-white font-semibold cursor-pointer w-[125px] h-[50px]'>
                         Apply
                     </button>
                 </div>
@@ -369,6 +372,20 @@ const JobDetails = () => {
                     </div>
                 </div>
             </div>
+
+
+            {application && (
+                <Application
+                    open={application}
+                    setOpen={setApplicattion}
+                    icon={job?.job?.company?.companyLogo}
+                    companyName={job?.job?.company?.companyName}
+                    location={job?.job?.company?.location}
+                    jobTitle={job?.job?.jobTitle}
+                    employmentType={job?.job?.employmentType}
+                    jobId={id}
+                />
+            )}
         </div>
     )
 }
