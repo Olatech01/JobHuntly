@@ -200,7 +200,7 @@ const JobDetails = () => {
             <div className='bg-[#D6DDEB] flex items-center px-8 justify-between w-full h-[200px]'>
                 <div className='flex items-center gap-4'>
                     <Image
-                        src={job?.job?.company?.companyLogoUrl}
+                        src={job?.job?.company?.companyLogo}
                         alt="Company Logo" width={80} height={80} className="object-contain rounded-md"
                         onError={(e) => { e.target.src = '/Avatar.svg' }}
                     />
@@ -326,8 +326,31 @@ const JobDetails = () => {
                         <h2 className='text-[#25324B] text-[24px] font-semibold'>
                             Categories
                         </h2>
-                        <p className="border text-[#FFB836] border-[#FFB836] w-fit text-xs px-3 py-1 rounded-full">
-                            {job?.job?.categories}
+                        <p className="flex flex-wrap gap-2">
+                            {job?.job?.company?.industry?.map((item, index) => {
+                                const colors = [
+                                    { border: '#FFB836', text: '#FFB836' },
+                                    { border: '#3B82F6', text: '#3B82F6' },
+                                    { border: '#10B981', text: '#10B981' },
+                                    { border: '#EF4444', text: '#EF4444' },
+                                    { border: '#8B5CF6', text: '#8B5CF6' },
+                                    { border: '#EC4899', text: '#EC4899' }
+                                ];
+                                const color = colors[index % colors.length];
+
+                                return (
+                                    <span
+                                        key={index}
+                                        className="border w-fit text-xs px-3 py-1 rounded-full"
+                                        style={{
+                                            borderColor: color.border,
+                                            color: color.text
+                                        }}
+                                    >
+                                        {item}
+                                    </span>
+                                );
+                            })}
                         </p>
                     </div>
                     <div className="space-y-3">

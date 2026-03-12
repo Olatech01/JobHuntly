@@ -1,10 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    remotePatterns: [
+     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'jobhuntly-backend.onrender.com',
+        hostname: 'res.cloudinary.com',
+        port: '',
+        pathname: '/uploads/**',
       },
     ],
   },

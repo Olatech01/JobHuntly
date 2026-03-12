@@ -67,7 +67,9 @@ export default function JobList() {
             }
         };
 
-        fetchJobs();
+        if (token) {
+            fetchJobs();
+        }
     }, [token]);
 
     const perPage = 5;
@@ -172,7 +174,7 @@ export default function JobList() {
                                     >
                                         {/* Logo + badge */}
                                         <div className="flex justify-between items-center">
-                                            <Image src={job.company?.companyLogoUrl} width={40} height={40} alt="logo" />
+                                            <Image src={job.company?.companyLogo} width={40} height={40} alt="logo" />
 
                                             <span className="bg-[#E7F6EC] text-[#56CDAD] text-xs px-3 py-1 rounded-full">
                                                 {job.employmentType}
@@ -231,9 +233,9 @@ export default function JobList() {
                                     <div className="flex gap-4">
 
                                         <Image
-                                            src={job.company?.companyLogoUrl}
-                                            width={50}
-                                            height={50}
+                                            src={job.company?.companyLogo}
+                                            width={60}
+                                            height={60}
                                             alt="logo"
                                         />
 
