@@ -1,13 +1,16 @@
+"use client"
 import { Calendar1 } from 'lucide-react'
-import React from 'react'
+import React, { useContext } from 'react'
 import Stats from './Stats'
+import { UserContext } from '@/components/Context/UserContext'
 
 const Main = () => {
+    const {user} = useContext(UserContext)
     return (
         <div className='flex  flex-col gap-8'>
             <div className='flex items-center justify-between'>
                 <div>
-                    <h1 className='text-[#25324B] text-[24px] font-semibold'>Good Morning, Stripe</h1>
+                    <h1 className='text-[#25324B] text-[24px] font-semibold'>Good Morning, {user?.fullName}</h1>
                     <p className='text-[16px] font-medium text-[#7C8493]'>
                         Here is your job listings statistic report from July 19 - July 25.
                     </p>

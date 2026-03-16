@@ -18,10 +18,10 @@ const Sidebar = () => {
     const menuItems = [
         { name: "Company", icon: <Home />, path: "/company" },
         { name: "Message", icon: <MessageSquareText />, path: "/company/messages" },
-        { name: "Company Profile", icon: <File />, path: "/company/applications" },
-        { name: "All Applicants", icon: <Search />, path: "/company/jobs" },
-        { name: "Job Listing", icon: <Building2 />, path: "/company/companies" },
-        { name: "My Schedule", icon: <User />, path: "/company/profile" },
+        { name: "Company Profile", icon: <File />, path: "/company/profile" },
+        { name: "All Applicants", icon: <Search />, path: "/company/applicants" },
+        { name: "Job Listing", icon: <Building2 />, path: "/company/jobs" },
+        { name: "My Schedule", icon: <User />, path: "/company/schedule" },
         { name: "Settings", icon: <Settings />, path: "/company/settings" },
         { name: "Help Center", icon: <CircleQuestionMark />, path: "/company/help" },
     ]

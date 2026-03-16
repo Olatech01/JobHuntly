@@ -2,16 +2,23 @@
 import Image from 'next/image'
 import React from 'react'
 import toast from 'react-hot-toast';
-import { setCookie } from 'cookies-next';
+import { setCookie, deleteCookie, getCookie } from 'cookies-next';
 
 const Login = () => {
-    const [activeTab, setActiveTab] = React.useState('seeker');
     const [loading, setLoading] = React.useState(false);
+    const [userType, setUserType] = React.useState('jobSeeker'); // 'seeker' or 'employer'
 
     const [formData, setFormData] = React.useState({
         email: '',
         password: ''
     });
+
+    // Clear existing cookies on component mount
+    React.useEffect(() => {
+        // Clear any existing auth cookies
+        deleteCookie('token');
+        deleteCookie('user');
+    }, []);
 
     const handleInputChange = (e) => {
         setFormData({
@@ -23,6 +30,7 @@ const Login = () => {
     const payload = {
         email: formData.email,
         password: formData.password,
+        userType: userType // Include user type in the request
     }
 
     const handleSubmit = async (e) => {
@@ -30,6 +38,10 @@ const Login = () => {
         setLoading(true);
 
         try {
+            // First, clear any existing cookies before new login
+            deleteCookie('token');
+            deleteCookie('user');
+
             const response = await fetch("/api/auth/login", {
                 method: 'POST',
                 headers: {
@@ -59,11 +71,16 @@ const Login = () => {
                 });
 
                 toast.success(data.msg);
-                window.location.href = '/dashboard';
+
+                // Role-based routing
+                if (data.user.role === 'company' || data.user.userType === 'company') {
+                    window.location.href = '/company';
+                } else {
+                    window.location.href = '/dashboard';
+                }
             } else {
-                // console.error('Login failed:', data);
                 if (data.error) {
-                    toast.error(data.error); 
+                    toast.error(data.error);
                 } else if (data.statusCode === "00") {
                     toast.error("Invalid credentials");
                 } else {
@@ -78,7 +95,6 @@ const Login = () => {
         }
     };
 
-
     return (
         <div className='flex bg-[#F8F8FD]'>
             <div className='w-full h-screen'>
@@ -87,116 +103,81 @@ const Login = () => {
             <div className='w-full bg-white h-screen'>
                 <form onSubmit={handleSubmit} className='flex justify-center items-center h-full'>
                     <div className='w-[400px]'>
-                        <h1 className='text-3xl font-bold mb-6'>Login</h1>
-                        <div className='flex mb-4'>
-                            <button
-                                type="button"
-                                onClick={() => setActiveTab('seeker')}
-                                className={`w-1/2 py-2 ${activeTab === 'seeker' ? 'bg-[#4640DE]/40 text-[#4640DE]' : 'bg-gray-200 text-gray-700'}`}
-                            >
-                                Job Seeker
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setActiveTab('employer')}
-                                className={`w-1/2 py-2 ${activeTab === 'employer' ? 'bg-[#4640DE]/70 text-[#4640DE]' : 'bg-gray-200 text-gray-700'}`}
-                            >
-                                Employer
-                            </button>
-                        </div>
-                        <h2 className='text-[25px] font-bold'>
+                        {/* <h1 className='text-3xl font-bold mb-6'>Login</h1> */}
+
+                        <h2 className='text-[25px] font-bold mb-4'>
                             Welcome Back
                         </h2>
-                        {activeTab === 'seeker' && (
+
+                        <div>
                             <div>
-                                <div>
-                                    <label htmlFor="email">Email address</label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        id="email"
-                                        value={formData.email}
-                                        onChange={handleInputChange}
-                                        placeholder="Email"
-                                        className='w-full p-2 mb-4 border border-gray-300 rounded'
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label htmlFor="password">Password</label>
-                                    <input
-                                        type="password"
-                                        name="password"
-                                        id="password"
-                                        value={formData.password}
-                                        onChange={handleInputChange}
-                                        placeholder="Password"
-                                        className='w-full p-2 mb-4 border border-gray-300 rounded'
-                                        required
-                                    />
-                                </div>
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className={`w-full py-2 rounded text-white flex items-center justify-center gap-2 
-                                    ${loading ? "bg-blue-300 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"}`}
-                                >
-                                    {loading ? (
-                                        <>
-                                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                            Logging in...
-                                        </>
-                                    ) : (
-                                        "Login as Job Seeker"
-                                    )}
-                                </button>
+                                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Email address
+                                </label>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    id="email"
+                                    value={formData.email}
+                                    onChange={handleInputChange}
+                                    placeholder="Enter your email"
+                                    className='w-full p-3 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4640DE] focus:border-transparent'
+                                    required
+                                />
                             </div>
-                        )}
-                        {activeTab === 'employer' && (
                             <div>
-                                <div>
-                                    <label htmlFor="email">Email address</label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        id="email"
-                                        value={formData.email}
-                                        onChange={handleInputChange}
-                                        placeholder="Email"
-                                        className='w-full p-2 mb-4 border border-gray-300 rounded'
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label htmlFor="password">Password</label>
-                                    <input
-                                        type="password"
-                                        name="password"
-                                        id="password"
-                                        value={formData.password}
-                                        onChange={handleInputChange}
-                                        placeholder="Password"
-                                        className='w-full p-2 mb-4 border border-gray-300 rounded'
-                                        required
-                                    />
-                                </div>
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className={`w-full py-2 rounded text-white flex items-center justify-center gap-2 
-                                    ${loading ? "bg-blue-300 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"}`}
-                                >
-                                    {loading ? (
-                                        <>
-                                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                            Logging in...
-                                        </>
-                                    ) : (
-                                        "Login as Employer"
-                                    )}
-                                </button>
+                                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Password
+                                </label>
+                                <input
+                                    type="password"
+                                    name="password"
+                                    id="password"
+                                    value={formData.password}
+                                    onChange={handleInputChange}
+                                    placeholder="Enter your password"
+                                    className='w-full p-3 mb-6 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4640DE] focus:border-transparent'
+                                    required
+                                />
                             </div>
-                        )}
+
+                            {/* Forgot Password Link */}
+                            <div className="text-right mb-4">
+                                <a href="/forgot-password" className="text-sm text-[#4640DE] hover:underline">
+                                    Forgot password?
+                                </a>
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className={`w-full py-3 rounded-lg text-white flex items-center justify-center gap-2 font-medium transition-all
+                                    ${loading
+                                        ? "bg-[#4640DE]/50 cursor-not-allowed"
+                                        : "bg-[#4640DE] hover:bg-[#3630B0] hover:shadow-lg"
+                                    }`}
+                            >
+                                {loading ? (
+                                    <>
+                                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        Logging in...
+                                    </>
+                                ) : (
+                                    "Login"
+                                )}
+                            </button>
+
+                            {/* Sign up link */}
+                            <p className="text-center mt-6 text-gray-600">
+                                Don't have an account?{' '}
+                                <a
+                                    href={userType === 'seeker' ? "/signup" : "/company/signup"}
+                                    className="text-[#4640DE] font-medium hover:underline"
+                                >
+                                    Sign up
+                                </a>
+                            </p>
+                        </div>
                     </div>
                 </form>
             </div>
