@@ -10,6 +10,7 @@ import { PiUsersFourLight } from "react-icons/pi";
 import { IoLocationOutline } from "react-icons/io5";
 import { PiBuildings } from "react-icons/pi";
 import { VscFlame } from "react-icons/vsc";
+import Team from './Team';
 
 
 const Profile = () => {
@@ -209,6 +210,7 @@ const Profile = () => {
                             ))}
                         </div>
                     </div>
+                    <Team />
                 </div>
 
                 {/* Right Column - Company Info */}
