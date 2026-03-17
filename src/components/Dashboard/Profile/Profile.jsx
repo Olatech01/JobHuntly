@@ -1,6 +1,10 @@
+"use client"
+import { UserContext } from '@/components/Context/UserContext';
 import { Globe, Instagram, Languages, Mail, Plus, Smartphone, Twitter } from 'lucide-react';
 import Image from 'next/image';
-import React from 'react'
+import { useRouter } from 'next/navigation';
+import React, { useContext, useEffect, useState } from 'react'
+import toast from 'react-hot-toast';
 import { FaRegEdit } from "react-icons/fa";
 
 
@@ -50,6 +54,69 @@ const Profile = () => {
         "Content Planning",
         "Community Manager",
     ]
+
+    const {token } = useContext(UserContext)
+
+    const router = useRouter();
+    const [loading, setLoading] = useState(true);
+    const [profileData, setProfileData] = useState(null);
+
+    useEffect(() => {
+        fetchProfile();
+    }, []);
+
+    const fetchProfile = async () => {
+        try {
+            // const token = getCookie('token');
+
+            if (!token) {
+                toast.error('Please login first');
+                router.push('/auth/login');
+                return;
+            }
+
+            const response = await fetch('/api/profile', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+            console.log("userData: ", data)
+
+            if (response.ok && data.success) {
+                setProfileData(data.data);
+            } else {
+                toast.error(data.error || 'Failed to fetch profile');
+                if (response.status === 401) {
+                    router.push('/auth/login');
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching profile:', error);
+            toast.error('An error occurred while fetching profile');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4640DE]"></div>
+            </div>
+        );
+    }
+
+    if (!profileData) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <p className="text-gray-500">No profile data found</p>
+            </div>
+        );
+    }
+
+    const { user, profile } = profileData;
     return (
         <div className='flex flex-row gap-10'>
             <div className='w-full flex flex-col gap-10'>
@@ -57,7 +124,7 @@ const Profile = () => {
                     <Image height={100} width={100} src={"/header.svg"} alt='image' className='w-full' />
                     <div className=''>
                         <div className='bg-white rounded-full w-fit p-2'>
-                            <Image height={140} width={140} src={"/Avatar.svg"} alt='image' />
+                            <Image height={140} width={140} src={profile?.profilePicture} alt='image' />
                         </div>
                     </div>
                 </div>
@@ -71,11 +138,11 @@ const Profile = () => {
                         </span>
                     </div>
                     <p className='text-[#25324B] text-[16px] font-normal'>
-                        I’m a product designer + filmmaker currently working remotely at Twitter from beautiful Manchester, United Kingdom. I’m passionate about designing digital products that have a positive impact on the world.
+                        {profile?.aboutMe}
                     </p>
-                    <p className='text-[#25324B] text-[16px] font-normal'>
+                    {/* <p className='text-[#25324B] text-[16px] font-normal'>
                         For 10 years, I’ve specialised in interface, experience & interaction design as well as working in user research and product strategy for product agencies, big tech companies & start-ups.
-                    </p>
+                    </p> */}
                 </div>
                 <div className='border border-[#D6DDEB] py-6 px-4 flex flex-col gap-6'>
                     <div className='flex items-center justify-between'>
@@ -164,9 +231,9 @@ const Profile = () => {
                             </span>
                         </div>
                     </div>
-                    <div className='grid grid-cols-4 gap-4'>
-                        {skills.map((item, index) => (
-                            <div key={index}>
+                    <div className='flex flex-wrap space-x-5'>
+                        {profile.skills.map((item, index) => (
+                            <div key={index} className='flex flex-wrap gap-7'>
                                 <span className='text-[#4640DE] text-[16px] font-medium py-[4px] px-[12px] bg-[#F8F8FD]'>
                                     {item}
                                 </span>
@@ -191,7 +258,7 @@ const Profile = () => {
                             <span className='text-[#7C8493] text-[16px] font-normal'>Email</span>
                         </div>
                         <p className='text-[#25324B] text-[16px] font-normal'>
-                            jakegyll@email.com
+                           {user?.email}
                         </p>
                     </div>
                     <div>

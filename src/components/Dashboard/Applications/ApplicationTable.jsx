@@ -1,7 +1,8 @@
 "use client"
+import { UserContext } from "@/components/Context/UserContext";
 import { ListFilter, Search } from "lucide-react";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 const ApplicationTable = () => {
 
@@ -43,24 +44,80 @@ const ApplicationTable = () => {
         },
     ];
 
+    const [applications, setApplications] = useState([])
+    const { token } = useContext(UserContext);
+
+
+    useEffect(() => {
+        const fetchApplications = async () => {
+            if (!token) return;
+
+            // setIsLoadingData(true);
+
+            try {
+                const response = await fetch("/api/userApplication", {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server responded with ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log(data)
+
+                if (data.applications) {
+                    setApplications(data.applications);
+                } else if (Array.isArray(data)) {
+                    setApplications(data);
+                } else if (data.data) {
+                    setApplications(data.data);
+                } else {
+                    console.warn("Unexpected API format:", data);
+                    setApplications([]);
+                }
+
+            } catch (err) {
+                console.error("Fetch jobs failed:", err);
+                toast.error(err.message || "Failed to load jobs");
+                setApplications([]);
+            }
+        };
+
+        if (token) {
+            fetchApplications();
+        }
+    }, [token]);
+
     /* ---------------- Pagination ---------------- */
 
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
-    const totalPages = Math.ceil(table.length / itemsPerPage);
+    const totalPages = Math.ceil(applications.length / itemsPerPage);
 
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const currentData = table.slice(startIndex, startIndex + itemsPerPage);
+    const currentData = applications.slice(startIndex, startIndex + itemsPerPage);
 
     /* ---------------- Status Colors ---------------- */
 
     const statusStyle = {
-        "In Review": "text-[#FFB836] border-[#FFB836]",
-        Shortlisted: "text-[#56CDAD] border-[#56CDAD]",
-        Offered: "text-[#4640DE] border-[#4640DE]",
-        Interviewing: "text-[#FFB836] border-[#FFB836]",
-        Unsuitable: "text-[#FF6550] border-[#FF6550]",
+        pending: "text-[#FFB836] border-[#FFB836]",
+        reviewed: "text-[#FFB836] border-[#FFB836]",
+        shortlisted: "text-[#56CDAD] border-[#56CDAD]",
+        hired: "text-[#4640DE] border-[#4640DE]",
+        interviewing: "text-[#FFB836] border-[#FFB836]",
+        rejected: "text-[#FF6550] border-[#FF6550]",
+    };
+
+
+    const formatDate = (dateString) => {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return new Date(dateString).toLocaleDateString(undefined, options);
     };
 
     return (
@@ -127,24 +184,24 @@ const ApplicationTable = () => {
                                     <td className="flex items-center gap-3 py-4">
 
                                         <Image
-                                            src={item.companyLogo}
+                                            src={item.job?.company?.companyLogo}
                                             height={40}
                                             width={40}
                                             alt="logo"
                                         />
 
                                         <p className="text-[16px] font-medium text-[#25324B]">
-                                            {item.companyName}
+                                            {item.job?.company?.companyName}
                                         </p>
 
                                     </td>
 
                                     <td className="text-[16px] font-medium text-[#25324B]">
-                                        {item.role}
+                                        {item.job?.jobTitle}
                                     </td>
 
                                     <td className="text-[16px] font-medium text-[#25324B]">
-                                        {item.dateApplied}
+                                        {formatDate(item?.createdAt)}
                                     </td>
 
                                     <td>
@@ -184,8 +241,8 @@ const ApplicationTable = () => {
                         key={index}
                         onClick={() => setCurrentPage(index + 1)}
                         className={`px-3 py-1 border rounded ${currentPage === index + 1
-                                ? "bg-[#4640DE] text-white"
-                                : ""
+                            ? "bg-[#4640DE] text-white"
+                            : ""
                             }`}
                     >
                         {index + 1}

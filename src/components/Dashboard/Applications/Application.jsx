@@ -1,13 +1,16 @@
+"use client"
+import { UserContext } from '@/components/Context/UserContext'
 import { Calendar1, X } from 'lucide-react'
 import Image from 'next/image'
-import React from 'react'
+import React, { useContext } from 'react'
 
 const Application = () => {
+    const {user} = useContext(UserContext)
     return (
         <div className='flex flex-col gap-10'>
             <div className='flex items-center justify-between'>
                 <div>
-                    <h1 className='text-[#25324B] text-[24px] font-semibold'>Keep it up, Jake</h1>
+                    <h1 className='text-[#25324B] text-[24px] font-semibold'>Keep it up, {user?.fullName}</h1>
                     <p className='text-[16px] font-medium text-[#7C8493]'>
                         Here is what’s happening with your job search applications from July 19 - July 25.
                     </p>
