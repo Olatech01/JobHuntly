@@ -47,13 +47,6 @@ const Profile = () => {
         },
     ]
 
-    const skills = [
-        "Communication",
-        "Analytics",
-        "Facebook Ads",
-        "Content Planning",
-        "Community Manager",
-    ]
 
     const {token } = useContext(UserContext)
 
@@ -67,13 +60,7 @@ const Profile = () => {
 
     const fetchProfile = async () => {
         try {
-            // const token = getCookie('token');
 
-            if (!token) {
-                toast.error('Please login first');
-                router.push('/auth/login');
-                return;
-            }
 
             const response = await fetch('/api/profile', {
                 headers: {
@@ -140,9 +127,6 @@ const Profile = () => {
                     <p className='text-[#25324B] text-[16px] font-normal'>
                         {profile?.aboutMe}
                     </p>
-                    {/* <p className='text-[#25324B] text-[16px] font-normal'>
-                        For 10 years, I’ve specialised in interface, experience & interaction design as well as working in user research and product strategy for product agencies, big tech companies & start-ups.
-                    </p> */}
                 </div>
                 <div className='border border-[#D6DDEB] py-6 px-4 flex flex-col gap-6'>
                     <div className='flex items-center justify-between'>
